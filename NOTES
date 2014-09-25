@@ -1,0 +1,2 @@
+Clean up uses of cerr and cout to interact properly with both the direct-compilation and web versions.
+Make sure emkMain doesn't re-intialize anything if run more than once.
