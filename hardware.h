@@ -87,7 +87,8 @@ public:
   cHardware() : mem_array(1<<16), IP(0), advance_IP(false), exe_count(0), timeout(-1)
               , print_to_console(true), print_internal(true), count_cycles(false), verbose(false)
   {
-    srand(time(NULL));
+    // srand(time(NULL));
+    srand(1);
     // iout << "Console Output:" << std::endl;
   }
   ~cHardware() { ; }
