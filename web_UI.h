@@ -41,10 +41,6 @@ public:
 
     auto label_it = position_map.begin();
 
-    // for (auto pos_it = position_map.begin(); pos_it != position_map.end(); pos_it++) {
-    //   ss << "<tr><td>" << pos_it->first << "<td>" << pos_it->second << "</tr>";
-    // }
-
     for (int inst_id = 0; inst_id < hardware->GetNumInsts(); inst_id++) {
       // Check if there is a label we need to print.
       while (label_it != position_map.end() && inst_id == label_it->first) {
@@ -67,10 +63,17 @@ public:
     }
     ss << "</table>";
 
+    // Where should we scroll to on the screen?
+    // Aim for top of scroll to be a few lines above IP.
+    float scroll_frac = ((float) (hardware->GetIP() - 3)) / (float) hardware->GetNumInsts();
+    if (scroll_frac < 0.0) scroll_frac = 0.0;
+
     EM_ASM_ARGS({
         var code = Pointer_stringify($0);
-        document.getElementById("code").innerHTML = code;
-    }, ss.str().c_str());
+        var code_obj = document.getElementById("code");
+        code_obj.innerHTML = code;
+        code_obj.scrollTop = $1 * code_obj.scrollHeight;
+    }, ss.str().c_str(), scroll_frac);
   }
 
   
