@@ -174,6 +174,13 @@ public:
   }
 
   void DoPlayStep() {
+    // If we've run off the end, automatically pause.
+    if (hardware->GetIP() >= hardware->GetNumInsts()) {
+      EM_ASM({
+          tube_cb.is_paused = true;
+          document.getElementById("play_button").innerHTML = "Play";
+      });
+    }
     EM_ASM({
         if (tube_cb.is_paused == false) {
           emkJSDoCallback(tube_cb.step, 0);
