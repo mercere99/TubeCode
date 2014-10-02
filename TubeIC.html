@@ -97,7 +97,7 @@
 
         var reader = new FileReader();
         reader.onload = function(e) {
-          emkLoadString(e.target.result);
+          emkLoadString(e.target.result + '\n');
           document.getElementById("restart_button").disabled = false;
           document.getElementById("step_button").disabled = false;
           document.getElementById("play_button").disabled = false;
