@@ -39,8 +39,8 @@ public:
 
   cArray & operator=(const cArray & _in) { array_data = _in.array_data; return *this; }
 
-  int GetSize() { return (int) array_data.size(); }
-  int GetIndex(int idx) { return array_data[idx].AsInt(); }
+  int GetSize() const { return (int) array_data.size(); }
+  int GetIndex(int idx) const { return array_data[idx].AsInt(); }
 
   void SetIndex(int idx, int value) { array_data[idx].Set(value); }
   void Resize(int new_size) { array_data.resize(new_size); }
@@ -112,6 +112,7 @@ public:
   void SetVar(int id, float value) { var_map[id].Set(value); }
 
   cArray & GetArray(int id) { return array_map[id]; }
+  const std::map<int,cArray> & GetArrayMap() { return array_map; }
 
   void PushInt(int value) { exe_stack.push_back(new cStackEntry(value)); }
   void PushArray(const cArray & value) { exe_stack.push_back(new cStackEntry(value)); }

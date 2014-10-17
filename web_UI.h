@@ -61,6 +61,14 @@ public:
       }
       ss << "</tr>";
     }
+
+    // See if there are any final labels to include
+    while (label_it != position_map.end()) {
+      ss << "<tr style=background-color:white><td colspan=5>&nbsp;&nbsp;"
+         << label_it->second << ":</tr>";
+      label_it++;
+    }
+
     ss << "</table>";
 
     // Where should we scroll to on the screen?
@@ -101,7 +109,7 @@ public:
 
     const std::map<int, cVar> & var_map = hardware->GetVarMap();
     
-    // Print the variables into the table.
+    // Print the scalar variables into the table.
     int var_count = 0;
     for (auto var_it = var_map.begin(); var_it != var_map.end(); var_it++) {
       if (var_count % col_count == 0) ss << "<tr>";
@@ -114,6 +122,25 @@ public:
       ss << "<td width=" << col_width << "px>&nbsp;";
       var_count++;
     }
+    
+    // Print the array variables into the table.
+    ss << "<tr style=\"background-color:#CCCCFF\"><th colspan=" << col_count
+       << ">Array Variables</th></tr>";
+
+    const std::map<int, cArray> & array_map = hardware->GetArrayMap();
+    
+    // Print the array variables into the table.
+    for (auto var_it = array_map.begin(); var_it != array_map.end(); var_it++) {
+      ss << "<tr><td colspan=" << col_count << ">a" << var_it->first << " = [ ";
+      for (int i = 0; i < var_it->second.GetSize(); i++) {
+        if (i > 0) ss << ", ";
+        ss << var_it->second.GetIndex(i);
+      }
+      //<< var_it->second.AsInt();
+      ss << " ]</td></tr>";
+    }
+
+
     ss << "</table>";
 
     EM_ASM_ARGS({

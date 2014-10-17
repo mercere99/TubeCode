@@ -18,7 +18,7 @@ cHardware * main_hardware;
 int		[0-9]+
 comment		#.*
 eol		\n
-whitespace	[ \t]
+whitespace	[ \t\r]
 
 %%
 
