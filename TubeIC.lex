@@ -34,11 +34,9 @@ test_equ { return INST_TEST_EQU; }
 test_nequ { return INST_TEST_NEQU; }
 test_gte { return INST_TEST_GTE; }
 test_lte { return INST_TEST_LTE; }
-jump { return INST_JUMP; }
-jump_if_0 { return INST_JUMP_IF_0; }
-jump_if_n0 { return INST_JUMP_IF_N0; }
-jmp_if_0 { return INST_JUMP_IF_0; }
-jmp_if_n0 { return INST_JUMP_IF_N0; }
+ju?mp { return INST_JUMP; }
+ju?mp_if_0 { return INST_JUMP_IF_0; }
+ju?mp_if_n(ot)?0 { return INST_JUMP_IF_N0; }
 nop { return INST_NOP; }
 random { return INST_RANDOM; }
 out_int { return INST_OUT_INT; }
@@ -46,18 +44,13 @@ out_float { return INST_OUT_FLOAT; }
 out_char { return INST_OUT_CHAR; }
 push { return INST_PUSH; }
 pop { return INST_POP; }
-ar_get_idx { return INST_AR_GET_IDX; }
-ar_set_idx { return INST_AR_SET_IDX; }
-ar_get_siz { return INST_AR_GET_SIZ; }
-ar_set_siz { return INST_AR_SET_SIZ; }
-ar_get_size { return INST_AR_GET_SIZ; }
-ar_set_size { return INST_AR_SET_SIZ; }
-array_get_index { return INST_AR_GET_IDX; }
-array_set_index { return INST_AR_SET_IDX; }
-array_get_size { return INST_AR_GET_SIZ; }
-array_set_size { return INST_AR_SET_SIZ; }
-ar_copy { return INST_AR_COPY; }
-array_copy { return INST_AR_COPY; }
+ar(ray)?_get_(idx|index) { return INST_AR_GET_IDX; }
+ar(ray)?_set_(idx|index) { return INST_AR_SET_IDX; }
+ar(ray)?_get_siz(e?) { return INST_AR_GET_SIZ; }
+ar(ray)?_set_siz(e?) { return INST_AR_SET_SIZ; }
+ar(ray)?_copy { return INST_AR_COPY; }
+ar(ray)?_push { return INST_PUSH; }
+ar(ray)?_pop { return INST_POP; }
 
 -?{int} { yylval.int_val = atoi(yytext); return ARG_INT; }
 s{int} { yylval.int_val = atoi(yytext+1); return ARG_SCALAR; }

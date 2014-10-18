@@ -31,6 +31,7 @@ void yyerror(std::string err_string) {
 %token INST_JUMP INST_JUMP_IF_0 INST_JUMP_IF_N0
 %token INST_NOP INST_RANDOM INST_OUT_INT INST_OUT_FLOAT INST_OUT_CHAR INST_PUSH INST_POP
 %token INST_AR_GET_IDX INST_AR_SET_IDX INST_AR_GET_SIZ INST_AR_SET_SIZ INST_AR_COPY
+%token INST_AR_PUSH INST_AR_POP
 %token ENDLINE 
 %token <int_val> ARG_INT ARG_SCALAR ARG_CHAR ARG_ARRAY
 %token <lexeme> ARG_LABEL
@@ -74,15 +75,15 @@ statement:   { $$ = NULL; }
   | INST_OUT_INT    arg_any                 { $$ = new cInst_OUT_INT(line_num,$2); }
   | INST_OUT_FLOAT  arg_any                 { $$ = new cInst_OUT_FLOAT(line_num,$2); }
   | INST_OUT_CHAR   arg_any                 { $$ = new cInst_OUT_CHAR(line_num,$2); }
-  | INST_PUSH       arg_arr                 { $$ = new cInst_PUSH_ARRAY(line_num,$2); }
   | INST_PUSH       arg_any                 { $$ = new cInst_PUSH_NUM(line_num,$2); }
-  | INST_POP        arg_arr                 { $$ = new cInst_POP_ARRAY(line_num,$2); }
   | INST_POP        arg_var                 { $$ = new cInst_POP_NUM(line_num,$2); }
   | INST_AR_GET_IDX arg_arr arg_any arg_var { $$ = new cInst_AR_GET_IDX(line_num,$2,$3,$4); }
   | INST_AR_SET_IDX arg_arr arg_any arg_any { $$ = new cInst_AR_SET_IDX(line_num,$2,$3,$4); }
   | INST_AR_GET_SIZ arg_arr arg_var         { $$ = new cInst_AR_GET_SIZ(line_num,$2,$3); }
   | INST_AR_SET_SIZ arg_arr arg_any         { $$ = new cInst_AR_SET_SIZ(line_num,$2,$3); }
   | INST_AR_COPY    arg_arr arg_arr         { $$ = new cInst_AR_COPY(line_num,$2,$3); }
+  | INST_AR_PUSH    arg_arr                 { $$ = new cInst_PUSH_ARRAY(line_num,$2); }
+  | INST_AR_POP     arg_arr                 { $$ = new cInst_POP_ARRAY(line_num,$2); }
   | ARG_LABEL {
        std::string err = "Unknown instruction '";
        err += $1;
