@@ -49,8 +49,8 @@ ar(ray)?_set_(idx|index) { return INST_AR_SET_IDX; }
 ar(ray)?_get_siz(e?) { return INST_AR_GET_SIZ; }
 ar(ray)?_set_siz(e?) { return INST_AR_SET_SIZ; }
 ar(ray)?_copy { return INST_AR_COPY; }
-ar(ray)?_push { return INST_PUSH; }
-ar(ray)?_pop { return INST_POP; }
+ar(ray)?_push { return INST_AR_PUSH; }
+ar(ray)?_pop { return INST_AR_POP; }
 
 -?{int} { yylval.int_val = atoi(yytext); return ARG_INT; }
 s{int} { yylval.int_val = atoi(yytext+1); return ARG_SCALAR; }
@@ -124,6 +124,8 @@ void LexMain(int argc, char * argv[])
       std::cout << "  " << cInst_AR_GET_SIZ::GetDesc() << std::endl;
       std::cout << "  " << cInst_AR_SET_SIZ::GetDesc() << std::endl;
       std::cout << "  " << cInst_AR_COPY::GetDesc() << std::endl;
+      std::cout << "  " << cInst_PUSH_ARRAY::GetDesc() << std::endl;
+      std::cout << "  " << cInst_POP_ARRAY::GetDesc() << std::endl;
       exit(0);
     }
 

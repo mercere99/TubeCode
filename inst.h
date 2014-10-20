@@ -502,8 +502,8 @@ public:
     : cInst_Base(ln, _a1) { ; }
   ~cInst_PUSH_ARRAY() { ; }
 
-  std::string GetName() const { return "push"; }
-  static std::string GetDesc() { return "push : Store arg1 in an internal control stack"; }
+  std::string GetName() const { return "ar_push"; }
+  static std::string GetDesc() { return "ar_push : Store array arg1 in an internal control stack"; }
 
   bool Run();
 };
@@ -528,8 +528,8 @@ public:
     : cInst_Base(ln, _a1) { ; }
   ~cInst_POP_ARRAY() { ; }
 
-  std::string GetName() const { return "pop"; }
-  static std::string GetDesc() { return "pop : Retrieve arg1 from an internal control stack"; }
+  std::string GetName() const { return "ar_pop"; }
+  static std::string GetDesc() { return "ar_pop : Retrieve array arg1 from an internal control stack"; }
 
   bool Run();
 };
