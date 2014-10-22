@@ -33,11 +33,9 @@ test_equ { return INST_TEST_EQU; }
 test_nequ { return INST_TEST_NEQU; }
 test_gte { return INST_TEST_GTE; }
 test_lte { return INST_TEST_LTE; }
-jump { return INST_JUMP; }
-jump_if_0 { return INST_JUMP_IF_0; }
-jump_if_n0 { return INST_JUMP_IF_N0; }
-jmp_if_0 { return INST_JUMP_IF_0; }
-jmp_if_n0 { return INST_JUMP_IF_N0; }
+ju?mp { return INST_JUMP; }
+ju?mp_if_0 { return INST_JUMP_IF_0; }
+ju?mp_if_n0 { return INST_JUMP_IF_N0; }
 nop { return INST_NOP; }
 random { return INST_RANDOM; }
 out_int { return INST_OUT_INT; }
