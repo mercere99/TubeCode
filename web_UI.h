@@ -19,14 +19,13 @@ template<typename A, typename B> std::multimap<B,A> flip_map(const std::map<A,B>
   return dst;
 }
 
-class TubeIC_UI {
-private:
+class VM_UI_base {
+protected:
   cHardware * hardware;
 
 public:
-  TubeIC_UI() : hardware(NULL)
-  {
-  }
+  VM_UI_base() : hardware(NULL) { ; }
+  virtual ~VM_UI_base() { ; }
 
   void UpdateCode() {
     std::string inst_bg = "#f0f0f0";
@@ -37,10 +36,14 @@ public:
        << "<tr><th>Line</th><th>Instruction</th><th>Arg 1</th><th>Arg 2</th><th>Arg 3</th></tr>";
 
     const std::map<std::string, int> & label_map = hardware->GetLabelMap();
+
+    // Reorganize label_map to be sorted by position, NOT name
     std::multimap<int, std::string> position_map = flip_map(label_map);
 
+    // Be ready to step through position map to identify when we've hit a label!
     auto label_it = position_map.begin();
 
+    // Step through all of the instructions in the program
     for (int inst_id = 0; inst_id < hardware->GetNumInsts(); inst_id++) {
       // Check if there is a label we need to print.
       while (label_it != position_map.end() && inst_id == label_it->first) {
@@ -50,8 +53,12 @@ public:
 
       // Instruction
       cInst_Base * inst = hardware->GetInst(inst_id);
+
+      // Make the current instruction (at the IP) a different color.
       if (inst_id == hardware->GetIP()) ss << "<tr style=background-color:" << IP_bg << ">";
       else ss << "<tr>";      
+
+      // Print out the information about the current instruction.
       ss << "<td>" << inst_id
          << "<td>" << inst->GetName();
 
@@ -94,61 +101,8 @@ public:
     }, hardware->GetMessages().c_str());
   }
 
-  void UpdateVars() {
-    // Basic layout settings
-    const std::string title_bg = "#CCCCFF";
-    const int table_width = 500;
-    const int col_count = 4;
-    const int col_width = table_width / col_count;
-
-    // Setup the code for the table
-    std::stringstream ss;
-    ss << "<table width=" << table_width << "px>"
-       << "<tr style=\"background-color:#CCCCFF\"><th colspan=" << col_count
-       << ">Scalar Variables</th></tr>";
-
-    const std::map<int, cVar> & var_map = hardware->GetVarMap();
-    
-    // Print the scalar variables into the table.
-    int var_count = 0;
-    for (auto var_it = var_map.begin(); var_it != var_map.end(); var_it++) {
-      if (var_count % col_count == 0) ss << "<tr>";
-      ss << "<td width=" << col_width << "px>s" << var_it->first << " = " << var_it->second.AsInt();
-      var_count++;
-    }
-
-    // Leave blanks to fill out the row.
-    while (var_count % col_count != 0) {
-      ss << "<td width=" << col_width << "px>&nbsp;";
-      var_count++;
-    }
-    
-    // Print the array variables into the table.
-    ss << "<tr style=\"background-color:#CCCCFF\"><th colspan=" << col_count
-       << ">Array Variables</th></tr>";
-
-    const std::map<int, cArray> & array_map = hardware->GetArrayMap();
-    
-    // Print the array variables into the table.
-    for (auto var_it = array_map.begin(); var_it != array_map.end(); var_it++) {
-      ss << "<tr><td colspan=" << col_count << ">a" << var_it->first << " = [ ";
-      for (int i = 0; i < var_it->second.GetSize(); i++) {
-        if (i > 0) ss << ", ";
-        ss << var_it->second.GetIndex(i);
-      }
-      //<< var_it->second.AsInt();
-      ss << " ]</td></tr>";
-    }
-
-
-    ss << "</table>";
-
-    EM_ASM_ARGS({
-        var var_info = Pointer_stringify($0);
-        document.getElementById("vars").innerHTML = var_info;
-    }, ss.str().c_str());
-  }
-
+  // The main different between hardware types is available variables
+  virtual void UpdateVars() = 0;
   
   void UpdateUI() { 
     UpdateCode();
@@ -216,6 +170,70 @@ public:
     });
   }
 
+};
+
+
+class TubeIC_UI : public VM_UI_base{
+public:
+  TubeIC_UI() { ; }
+  ~TubeIC_UI() { ; }
+
+  void UpdateVars() {
+    // Basic layout settings
+    const std::string title_bg = "#CCCCFF";
+    const int table_width = 500;
+    const int col_count = 4;
+    const int col_width = table_width / col_count;
+
+    // Setup the code for the table
+    std::stringstream ss;
+    ss << "<table width=" << table_width << "px>"
+       << "<tr style=\"background-color:#CCCCFF\"><th colspan=" << col_count
+       << ">Scalar Variables</th></tr>";
+
+    const std::map<int, cVar> & var_map = hardware->GetVarMap();
+    
+    // Print the scalar variables into the table.
+    int var_count = 0;
+    for (auto var_it = var_map.begin(); var_it != var_map.end(); var_it++) {
+      if (var_count % col_count == 0) ss << "<tr>";
+      ss << "<td width=" << col_width << "px>s" << var_it->first << " = " << var_it->second.AsInt();
+      var_count++;
+    }
+
+    // Leave blanks to fill out the row.
+    while (var_count % col_count != 0) {
+      ss << "<td width=" << col_width << "px>&nbsp;";
+      var_count++;
+    }
+    
+    // Print the array variables into the table.
+    ss << "<tr style=\"background-color:#CCCCFF\"><th colspan=" << col_count
+       << ">Array Variables</th></tr>";
+
+    const std::map<int, cArray> & array_map = hardware->GetArrayMap();
+    
+    // Print the array variables into the table.
+    for (auto var_it = array_map.begin(); var_it != array_map.end(); var_it++) {
+      ss << "<tr><td colspan=" << col_count << ">a" << var_it->first << " = [ ";
+      for (int i = 0; i < var_it->second.GetSize(); i++) {
+        if (i > 0) ss << ", ";
+        ss << var_it->second.GetIndex(i);
+      }
+      //<< var_it->second.AsInt();
+      ss << " ]</td></tr>";
+    }
+
+
+    ss << "</table>";
+
+    EM_ASM_ARGS({
+        var var_info = Pointer_stringify($0);
+        document.getElementById("vars").innerHTML = var_info;
+    }, ss.str().c_str());
+  }
+
+  
 };
 
 
