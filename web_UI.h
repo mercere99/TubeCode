@@ -237,4 +237,69 @@ public:
 };
 
 
+class tubecode_UI : public VM_UI_base{
+public:
+  tubecode_UI() { ; }
+  ~tubecode_UI() { ; }
+
+  void UpdateVars() {
+    // Basic layout settings
+    const std::string title_bg = "#CCCCFF";
+    const int table_width = 500;
+    const int col_count = 4;
+    const int col_width = table_width / col_count;
+
+    // Setup the code for the table
+    std::stringstream ss;
+    ss << "<table width=" << table_width << "px>"
+       << "<tr style=\"background-color:#CCCCFF\"><th colspan=" << col_count
+       << ">Registers</th></tr>";
+
+    const std::map<int, cVar> & var_map = hardware->GetVarMap();
+    
+    // Print the registers into the table.
+    int var_count = 0;
+    for (auto var_it = var_map.begin(); var_it != var_map.end(); var_it++) {
+      if (var_count % col_count == 0) ss << "<tr>";
+      ss << "<td width=" << col_width << "px>reg" << ((char) ('A' + var_it->first))
+         << " = " << var_it->second.AsInt();
+      var_count++;
+    }
+
+    // Leave blanks to fill out the row.
+    while (var_count % col_count != 0) {
+      ss << "<td width=" << col_width << "px>&nbsp;";
+      var_count++;
+    }
+    
+    // Print the state of the memory into the table.
+    const std::vector<int> & mem_array = hardware->GetMemArray();
+    const int max_mem = hardware->GetMaxMemSet();
+    const int row_size = 20;
+
+    ss << "</table><table width=" << table_width << "px>"
+       << "<tr style=\"background-color:#CCCCFF\"><th colspan=" << (row_size+1)
+       << ">Memory</th></tr>";
+
+    for (int i = 0; i <= max_mem; i += row_size) {
+      // @CAO Ideally, we should only print a row if any of the elements in it are non-zero.
+      ss << "<tr><th>" << i;
+      for (int j = i; j < i+row_size; j++) {
+        ss << "<td>" << mem_array[j];
+      }
+      ss << "</tr>";
+    }
+
+    ss << "</table>";
+
+    EM_ASM_ARGS({
+        var var_info = Pointer_stringify($0);
+        document.getElementById("vars").innerHTML = var_info;
+    }, ss.str().c_str());
+  }
+
+  
+};
+
+
 #endif

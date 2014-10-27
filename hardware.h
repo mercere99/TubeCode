@@ -63,11 +63,12 @@ public:
 
 class cHardware {
 private:
-  std::map<std::string,int> label_map;  // Tracking positions of all labels in the source file.
+  std::map<std::string,int> label_map;    // Tracking positions of all labels in the source file.
   std::map<int,cVar> var_map;
   std::map<int,cArray> array_map;
   std::vector<cInst_Base *> inst_vector;
   std::vector<int> mem_array;
+  int max_mem_set;                        // Maximum memory value set so far.
 
   std::vector<cStackEntry *> exe_stack;
 
@@ -84,7 +85,7 @@ private:
   bool verbose;           // Should we print information about each line executed?
   std::ofstream v_file;   // Verbose file.
 public:
-  cHardware() : mem_array(1<<16), IP(0), advance_IP(false), exe_count(0), timeout(-1)
+  cHardware() : mem_array(1<<16), max_mem_set(0), IP(0), advance_IP(false), exe_count(0), timeout(-1)
               , print_to_console(true), print_internal(true), count_cycles(false), verbose(false)
   {
     // srand(time(NULL));
@@ -178,8 +179,14 @@ public:
       exit(1);
     }
     mem_array[mem_pos] = value;
+    if (mem_pos > max_mem_set) max_mem_set = mem_pos;
   }
   
+  int GetMaxMemSet() const { return max_mem_set; }
+
+  const std::vector<int> & GetMemArray() const { return mem_array; }
+
+
   bool RunStep();
   bool Run();
 

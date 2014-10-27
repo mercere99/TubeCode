@@ -52,6 +52,8 @@ ar(ray)?_copy { return INST_AR_COPY; }
 ar(ray)?_push { return INST_AR_PUSH; }
 ar(ray)?_pop { return INST_AR_POP; }
 
+(load)|(store)|(mem_copy)|(reg[A-H]) { std::cerr << "Error(line " << line_num << "): instruction '" << yytext << "' valid only in TubeIC, not TubeCode assembly." << std::endl; exit(1); }
+
 -?{int} { yylval.int_val = atoi(yytext); return ARG_INT; }
 s{int} { yylval.int_val = atoi(yytext+1); return ARG_SCALAR; }
 a{int} { yylval.int_val = atoi(yytext+1); return ARG_ARRAY; }

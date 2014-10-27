@@ -9,7 +9,7 @@ extern "C" {
 };
 
 
-TubeIC_UI * UI;
+VM_UI_base * UI;
 extern cHardware * main_hardware;
 
 bool ParseString(const std::string &);
@@ -18,11 +18,29 @@ extern "C" int emkMain()
 {
   UI = new TubeIC_UI();  // Only build once at the very beginning.
 
-  emk::MethodCallback<TubeIC_UI> * restart_cb = new emk::MethodCallback<TubeIC_UI>(UI, &TubeIC_UI::DoRestart);
-  emk::MethodCallback<TubeIC_UI> * step_cb = new emk::MethodCallback<TubeIC_UI>(UI, &TubeIC_UI::DoStep);
-  emk::MethodCallback<TubeIC_UI> * play_cb = new emk::MethodCallback<TubeIC_UI>(UI, &TubeIC_UI::DoPlay);
-  emk::MethodCallback<TubeIC_UI> * end_cb = new emk::MethodCallback<TubeIC_UI>(UI, &TubeIC_UI::DoEnd);
-  emk::MethodCallback<TubeIC_UI> * play_step_cb = new emk::MethodCallback<TubeIC_UI>(UI, &TubeIC_UI::DoPlayStep);
+  emk::MethodCallback<VM_UI_base> * restart_cb = new emk::MethodCallback<VM_UI_base>(UI, &VM_UI_base::DoRestart);
+  emk::MethodCallback<VM_UI_base> * step_cb = new emk::MethodCallback<VM_UI_base>(UI, &VM_UI_base::DoStep);
+  emk::MethodCallback<VM_UI_base> * play_cb = new emk::MethodCallback<VM_UI_base>(UI, &VM_UI_base::DoPlay);
+  emk::MethodCallback<VM_UI_base> * end_cb = new emk::MethodCallback<VM_UI_base>(UI, &VM_UI_base::DoEnd);
+  emk::MethodCallback<VM_UI_base> * play_step_cb = new emk::MethodCallback<VM_UI_base>(UI, &VM_UI_base::DoPlayStep);
+  
+  Tube_SetButtonCallbacks((int) restart_cb, (int) step_cb, (int) play_cb, (int) end_cb, (int) play_step_cb);
+
+  main_hardware = NULL;
+
+  return 0;
+}
+
+
+extern "C" int emkMain_tubecode()
+{
+  UI = new tubecode_UI();  // Only build once at the very beginning.
+
+  emk::MethodCallback<VM_UI_base> * restart_cb = new emk::MethodCallback<VM_UI_base>(UI, &VM_UI_base::DoRestart);
+  emk::MethodCallback<VM_UI_base> * step_cb = new emk::MethodCallback<VM_UI_base>(UI, &VM_UI_base::DoStep);
+  emk::MethodCallback<VM_UI_base> * play_cb = new emk::MethodCallback<VM_UI_base>(UI, &VM_UI_base::DoPlay);
+  emk::MethodCallback<VM_UI_base> * end_cb = new emk::MethodCallback<VM_UI_base>(UI, &VM_UI_base::DoEnd);
+  emk::MethodCallback<VM_UI_base> * play_step_cb = new emk::MethodCallback<VM_UI_base>(UI, &VM_UI_base::DoPlayStep);
   
   Tube_SetButtonCallbacks((int) restart_cb, (int) step_cb, (int) play_cb, (int) end_cb, (int) play_step_cb);
 

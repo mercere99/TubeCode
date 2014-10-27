@@ -12,7 +12,8 @@ extern int yylex();
 extern cHardware * main_hardware;
 
 void yyerror(std::string err_string) {
-  std::cout << "ERROR(line " << line_num << "): " << err_string << std::endl;
+  // std::cout << "ERROR(line " << line_num << "): " << err_string << std::endl;
+  (*main_hardware) << "ERROR(line " << line_num << "): " << err_string << '\n';
 }
 
 %}
@@ -94,6 +95,7 @@ arg_reg:  ARG_REG { $$ = new cInstArg_Reg($1); }
 
 %%
 void LexMain(int argc, char * argv[]);
+void LexReadString(const std::string & in_string);
 
 int main(int argc, char * argv[])
 {
@@ -104,4 +106,13 @@ int main(int argc, char * argv[])
   main_hardware->Run();
 
   return 0;
+}
+
+bool ParseString(const std::string & in_string)
+{
+  LexReadString(in_string);
+  yyparse();
+  // yy_delete_buffer(YY_CURRENT_BUFFER);
+
+  return true;
 }

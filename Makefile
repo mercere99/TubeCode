@@ -5,7 +5,7 @@ LFLAGS_nat := -ll -ly
 CXX_web := emcc
 OFLAGS_web := -g4 -Werror -DEMK_DEBUG
 # OFLAGS_web := -oz
-CFLAGS_web := -std=c++11 $(OFLAGS_web) --js-library library_tubecode.js -s EXPORTED_FUNCTIONS="['_emkMain', '_emkJSDoCallback', '_emkLoadString']"
+CFLAGS_web := -std=c++11 $(OFLAGS_web) --js-library library_tubecode.js -s EXPORTED_FUNCTIONS="['_emkMain', '_emkMain_tubecode', '_emkJSDoCallback', '_emkLoadString']"
 
 default: native
 all: native web

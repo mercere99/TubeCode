@@ -7,6 +7,7 @@
 #include <iostream>
 #include <cstdlib>
 #include <stdio.h>
+
 int line_num = 1;
 cHardware * main_hardware;
 %}
@@ -17,7 +18,7 @@ cHardware * main_hardware;
 int		[0-9]+
 comment		#.*
 eol		\n
-whitespace	[ \t]
+whitespace	[ \t\r]
 
 %%
 
@@ -35,7 +36,7 @@ test_gte { return INST_TEST_GTE; }
 test_lte { return INST_TEST_LTE; }
 ju?mp { return INST_JUMP; }
 ju?mp_if_0 { return INST_JUMP_IF_0; }
-ju?mp_if_n0 { return INST_JUMP_IF_N0; }
+ju?mp_if_n(ot)?0 { return INST_JUMP_IF_N0; }
 nop { return INST_NOP; }
 random { return INST_RANDOM; }
 out_int { return INST_OUT_INT; }
@@ -48,8 +49,7 @@ mem_copy { return INST_MEM_COPY; }
 
 debug_status { return INST_DEBUG_STATUS; }
 
-"ar_get_idx"|"ar_set_idx"|"ar_get_siz"|"ar_set_siz"|"ar_get_size"|"ar_set_size"|"ar_copy"|"push"|"pop"|((a|s){int}) { std::cerr << "Error(line " << line_num << "): instruction '" << yytext << "' valid only in TubeIC, not TubeCode assembly." << std::endl; exit(1); }
-
+(push)|(pop)|(ar(ray)?_get_(idx|index))|(ar(ray)?_set_(idx|index))|(ar(ray)?_get_siz(e?))|(ar(ray)?_set_siz(e?))|(ar(ray)?_copy)|(ar(ray)?_push)|(ar(ray)?_pop)|((a|s){int}) { std::cerr << "Error(line " << line_num << "): instruction '" << yytext << "' valid only in TubeIC, not TubeCode assembly." << std::endl; exit(1); }
 
 -?{int} { yylval.int_val = atoi(yytext); return ARG_INT; }
 reg[A-H] { yylval.int_val = yytext[3]-'A'; return ARG_REG; }
@@ -157,4 +157,9 @@ void LexMain(int argc, char * argv[])
   }
 
   return;
+}
+
+void LexReadString(const std::string & in_string)
+{
+  yy_scan_string(in_string.c_str());  
 }
