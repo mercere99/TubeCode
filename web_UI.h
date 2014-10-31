@@ -281,13 +281,29 @@ public:
        << "<tr style=\"background-color:#CCCCFF\"><th colspan=" << (row_size+1)
        << ">Memory</th></tr>";
 
+    bool skipping = false;
     for (int i = 0; i <= max_mem; i += row_size) {
-      // @CAO Ideally, we should only print a row if any of the elements in it are non-zero.
-      ss << "<tr><th>" << i;
+      // See if this entire row is just zeros
+      bool all_zero = true;
       for (int j = i; j < i+row_size; j++) {
-        ss << "<td>" << mem_array[j];
+        if (mem_array[j] != 0) { all_zero = false; break; }
       }
-      ss << "</tr>";
+
+      // If there is information on this row (or its the first row) print it!
+      if (all_zero == false || i == 0) {
+        ss << "<tr><th>" << i;
+        for (int j = i; j < i+row_size; j++) {
+          ss << "<td>" << mem_array[j];
+        }
+        ss << "</tr>";
+        skipping = false;
+      }
+
+      // If this row is being skipped, put a ... unles we already have...
+      else if (skipping == false) {
+        ss << "<tr><th colspan=" << row_size+1 << ">...</tr>";
+        skipping = true;
+      }
     }
 
     ss << "</table>";
