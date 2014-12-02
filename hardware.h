@@ -98,6 +98,7 @@ public:
 
   int GetNumInsts() const { return (int) inst_vector.size(); }
   cInst_Base * GetInst(int id) { return inst_vector[id]; }
+  int GetExeCount() const { return exe_count; }
 
   void AddInst(cInst_Base * inst);
   void AddLabel(std::string _l);

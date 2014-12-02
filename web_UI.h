@@ -88,7 +88,11 @@ public:
         var code_obj = document.getElementById("code");
         code_obj.innerHTML = code;
         code_obj.scrollTop = $1 * code_obj.scrollHeight;
-    }, ss.str().c_str(), scroll_frac);
+        var cycle_obj = document.getElementById("cycle_count");
+        cycle_obj.innerHTML = "&nbsp;&nbsp;&nbsp;Cycles Used = " + $2;
+    }, ss.str().c_str(), scroll_frac, hardware->GetExeCount());
+
+
   }
 
   
@@ -275,7 +279,7 @@ public:
     // Print the state of the memory into the table.
     const std::vector<int> & mem_array = hardware->GetMemArray();
     const int max_mem = hardware->GetMaxMemSet();
-    const int row_size = 20;
+    const int row_size = 10;
 
     ss << "</table><table width=" << table_width << "px>"
        << "<tr style=\"background-color:#CCCCFF\"><th colspan=" << (row_size+1)

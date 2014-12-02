@@ -40,6 +40,15 @@
         overflow:auto;
         border:4px solid white;
       }
+
+      #buttonset {
+        float:left;
+      }
+
+      #cycle_count {
+        float:left;
+      }
+
     </style>
   </head>
 
@@ -59,6 +68,7 @@
       Choose a TubeCode Assembly (.tca) file that you would like to load and run.
     </p>
 
+    <div id="buttonset">
     <input type="file" id="infile" name="infile[]" />
     <output id="list"></output>
 
@@ -66,7 +76,10 @@
     <button title="Execute a single instruction in the program" style="width:80px" id="step_button"    disabled=true onclick="emkJSDoCallback(tube_cb.step, 0)">Step</button>
     <button title="Continuously execute instructions" style="width:80px" id="play_button"    disabled=true onclick="emkJSDoCallback(tube_cb.play, 0)">Play</button>
     <button title="Execute entire program and display final state" style="width:80px" id="end_button"     disabled=true onclick="emkJSDoCallback(tube_cb.end, 0)">To End</button>
+    </div>
 
+    <div id="cycle_count">&nbsp;&nbsp;&nbsp;Cycles Used = 0</div>
+        
     <br><br>
 
     <div id="container"></div>
