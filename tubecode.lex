@@ -16,6 +16,7 @@ cHardware * main_hardware;
 %option noyywrap
 
 int		[0-9]+
+float           [0-9]*\.?[0-9]+
 comment		#.*
 eol		\n
 whitespace	[ \t\r]
@@ -40,7 +41,7 @@ ju?mp_if_n(ot)?0 { return INST_JUMP_IF_N0; }
 nop { return INST_NOP; }
 random { return INST_RANDOM; }
 out_int { return INST_OUT_INT; }
-out_float { return INST_OUT_FLOAT; }
+out_float|out_val { return INST_OUT_FLOAT; }
 out_char { return INST_OUT_CHAR; }
 
 load { return INST_LOAD; }
