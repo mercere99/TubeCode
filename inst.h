@@ -1,6 +1,7 @@
 #ifndef INST_H
 #define INST_H
 
+#include <assert.h>
 #include <iostream>
 #include <string>
 #include <sstream>
@@ -16,7 +17,7 @@ public:
   virtual ~cInstArg_Base() { ; }
 
   virtual bool IsVar() { return false; }
-  virtual bool SetInt(int value) { (void) value; return false; }
+  virtual bool SetFloat(float value) = 0 ;//{ assert(false); (void) value; return false; }
 
   virtual int AsInt() = 0;
   virtual float AsFloat() = 0;
@@ -25,15 +26,21 @@ public:
   void SetHardware(cHardware * _h) { hardware = _h; }
 };
 
-class cInstArg_Int : public cInstArg_Base {
+class cInstArg_Float : public cInstArg_Base {
 private:
-  int value;
+  float value;
 public:
-  cInstArg_Int(int _v) : value(_v) { ; }
-  ~cInstArg_Int() { ; }
+  cInstArg_Float(float _v) : value(_v) { ; }
+  ~cInstArg_Float() { ; }
+
+  bool SetFloat(float value) {
+    assert(false && "Calling set on cInstArg_Float");
+    (void) value;
+    return false;
+  }
 
   int AsInt() { return value; }
-  float AsFloat() { return (float) value; }
+  float AsFloat() { return value; }
   std::string VerboseString() {
     std::stringstream ss;
     ss << value;
@@ -48,6 +55,12 @@ private:
 public:
   cInstArg_Label(std::string _l) : label(_l), value(-1) { ; }
   ~cInstArg_Label() { ; }
+
+  bool SetFloat(float value) {
+    assert(false && "Calling set on cInstArg_Label");
+    (void) value;
+    return false;
+  }
 
   int AsInt();
   float AsFloat() { return (float) AsInt(); }
@@ -66,7 +79,7 @@ public:
   ~cInstArg_Var() { ; }
 
   bool IsVar() { return true; }
-  bool SetInt(int value);
+  bool SetFloat(float value);
   std::string VerboseString() {
     std::stringstream ss;
     ss << "s" << var_id;
@@ -83,6 +96,12 @@ private:
 public:
   cInstArg_Array(int _id) : var_id(_id) { ; }
   ~cInstArg_Array() { ; }
+
+  bool SetFloat(float value) {
+    assert(false && "Calling set on cInstArg_Array");
+    (void) value;
+    return false;
+  }
 
   int AsInt() { return var_id; };
   float AsFloat() { return 0.0; };
@@ -101,7 +120,7 @@ public:
   ~cInstArg_Reg() { ; }
 
   bool IsVar() { return false; }
-  bool SetInt(int value);
+  bool SetFloat(float value);
   std::string VerboseString() {
     std::stringstream ss;
     ss << "reg" << (char) ('A' + reg_id);
@@ -117,6 +136,12 @@ private:
 public:
   cInstArg_IP() { ; }
   ~cInstArg_IP() { ; }
+
+  bool SetFloat(float value) {
+    assert(false && "Calling set on cInstArg_IP");
+    (void) value;
+    return false;
+  }
 
   bool IsVar() { return false; }
   bool SetInt(int value);
@@ -189,7 +214,7 @@ public:
 
   bool Run() {
     PrintVerbose("val_copy");
-    arg2->SetInt(arg1->AsInt());
+    arg2->SetFloat(arg1->AsFloat());
     return true;
   }
 };
@@ -206,7 +231,7 @@ class cInst_ADD : public cInst_Base {
 
   bool Run() {
     PrintVerbose("add");
-    arg3->SetInt(arg1->AsInt() + arg2->AsInt());
+    arg3->SetFloat(arg1->AsFloat() + arg2->AsFloat());
     return true;
   }
 };
@@ -223,7 +248,7 @@ public:
 
   bool Run() {
     PrintVerbose("sub");
-    arg3->SetInt(arg1->AsInt() - arg2->AsInt());
+    arg3->SetFloat(arg1->AsFloat() - arg2->AsFloat());
     return true;
   }
 };
@@ -240,7 +265,7 @@ public:
 
   bool Run() {
     PrintVerbose("mult");
-    arg3->SetInt(arg1->AsInt() * arg2->AsInt());
+    arg3->SetFloat(arg1->AsFloat() * arg2->AsFloat());
     return true;
   }
 };
@@ -283,7 +308,7 @@ public:
 
   bool Run() {
     PrintVerbose("test_less");
-    arg3->SetInt(arg1->AsInt() < arg2->AsInt());
+    arg3->SetFloat(arg1->AsFloat() < arg2->AsFloat());
     return true;
   }
 };
@@ -300,7 +325,7 @@ public:
 
   bool Run() {
     PrintVerbose("test_gtr");
-    arg3->SetInt(arg1->AsInt() > arg2->AsInt());
+    arg3->SetFloat(arg1->AsFloat() > arg2->AsFloat());
     return true;
   }
 };
@@ -317,7 +342,7 @@ public:
 
   bool Run() {
     PrintVerbose("test_equ");
-    arg3->SetInt(arg1->AsInt() == arg2->AsInt());
+    arg3->SetFloat(arg1->AsFloat() == arg2->AsFloat());
     return true;
   }
 };
@@ -334,7 +359,7 @@ public:
 
   bool Run() {
     PrintVerbose("test_nequ");
-    arg3->SetInt(arg1->AsInt() != arg2->AsInt());
+    arg3->SetFloat(arg1->AsFloat() != arg2->AsFloat());
     return true;
   }
 };
@@ -351,7 +376,7 @@ public:
 
   bool Run() {
     PrintVerbose("test_gte");
-    arg3->SetInt(arg1->AsInt() >= arg2->AsInt());
+    arg3->SetFloat(arg1->AsFloat() >= arg2->AsFloat());
     return true;
   }
 };
@@ -368,7 +393,7 @@ public:
 
   bool Run() {
     PrintVerbose("test_lte");
-    arg3->SetInt(arg1->AsInt() <= arg2->AsInt());
+    arg3->SetFloat(arg1->AsFloat() <= arg2->AsFloat());
     return true;
   }
 };

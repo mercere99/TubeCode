@@ -53,6 +53,7 @@ debug_status { return INST_DEBUG_STATUS; }
 (push)|(pop)|(ar(ray)?_get_(idx|index))|(ar(ray)?_set_(idx|index))|(ar(ray)?_get_siz(e?))|(ar(ray)?_set_siz(e?))|(ar(ray)?_copy)|(ar(ray)?_push)|(ar(ray)?_pop)|((a|s){int}) { std::cerr << "Error(line " << line_num << "): instruction '" << yytext << "' valid only in TubeIC, not TubeCode assembly." << std::endl; exit(1); }
 
 -?{int} { yylval.int_val = atoi(yytext); return ARG_INT; }
+-?{float} { yylval.float_val = atof(yytext); return ARG_FLOAT; }
 reg[A-H] { yylval.int_val = yytext[3]-'A'; return ARG_REG; }
 reg[I-Z] { std::cerr << "Error(line " << line_num << "): " << yytext << "not a legal register; only 8 registers available." << std::endl; exit(1); }
 IP { return ARG_IP; }

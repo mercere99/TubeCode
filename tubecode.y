@@ -30,9 +30,12 @@ void yyerror(std::string err_string) {
 %token INST_TEST_LESS INST_TEST_GTR INST_TEST_EQU INST_TEST_NEQU INST_TEST_GTE INST_TEST_LTE
 %token INST_JUMP INST_JUMP_IF_0 INST_JUMP_IF_N0
 %token INST_NOP INST_RANDOM INST_OUT_INT INST_OUT_FLOAT INST_OUT_CHAR
-%token INST_LOAD INST_STORE INST_MEM_COPY   INST_DEBUG_STATUS
+
+
+%token INST_LOAD INST_STORE INST_MEM_COPY INST_DEBUG_STATUS
 %token ENDLINE 
 %token <int_val> ARG_INT ARG_CHAR ARG_REG ARG_IP
+%token <float_val> ARG_FLOAT
 %token <lexeme> ARG_LABEL
 
 %type <inst_ptr> statement
@@ -84,8 +87,8 @@ arg_any:  arg_reg { $$ = $1; }
           | arg_const { $$ = $1; }
           ;
 
-arg_const: ARG_INT { $$ = new cInstArg_Int($1); }
-           | ARG_CHAR { $$ = new cInstArg_Int($1); }
+arg_const: ARG_FLOAT { $$ = new cInstArg_Float($1); }
+           | ARG_CHAR { $$ = new cInstArg_Float($1); }
            | ARG_LABEL { $$ = new cInstArg_Label($1); }
            ;
 

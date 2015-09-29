@@ -13,20 +13,21 @@
 
 class cVar {
 private:
-  union VarVals {
-    int i;
-    float f;
-  } value;
+  // union VarVals {
+  //   int i;
+  //   float f;
+  // } value;
+  float value;
 public:
-  cVar() { value.i = -1; }
-  cVar(const cVar & _in) { value.i = _in.value.i; }
+  cVar() { value = 0.0; }
+  cVar(const cVar & _in) { value = _in.value; }
   ~cVar() { ; }
 
-  int AsInt() const { return value.i; }
-  float AsFloat() const { return value.f; }
+  int AsInt() const { return (int) value; }
+  float AsFloat() const { return value; }
 
-  void Set(int _v) { value.i = _v; }
-  void Set(float _v) { value.f = _v; }
+  void Set(int _v) { value = (float) _v; }
+  void Set(float _v) { value = _v; }
 };
 
 class cArray {
@@ -40,23 +41,23 @@ public:
   cArray & operator=(const cArray & _in) { array_data = _in.array_data; return *this; }
 
   int GetSize() const { return (int) array_data.size(); }
-  int GetIndex(int idx) const { return array_data[idx].AsInt(); }
+  float GetIndex(int idx) const { return array_data[idx].AsFloat(); }
 
-  void SetIndex(int idx, int value) { array_data[idx].Set(value); }
+  void SetIndex(int idx, float value) { array_data[idx].Set(value); }
   void Resize(int new_size) { array_data.resize(new_size); }
 };
 
 class cStackEntry {
 private:
-  int value;
+  float value;
   cArray ar_value;
   bool is_array;
 public:
-  cStackEntry(int _v) : value(_v), is_array(false) { ; }
+  cStackEntry(float _v) : value(_v), is_array(false) { ; }
   cStackEntry(const cArray & _v) : ar_value(_v), is_array(true) { ; }
   ~cStackEntry() { ; }
 
-  int AsInt() { return value; }
+  float AsFloat() { return value; }
   const cArray & AsArray() { return ar_value; }
   bool IsArray() { return is_array; }
 };
@@ -67,7 +68,7 @@ private:
   std::map<int,cVar> var_map;
   std::map<int,cArray> array_map;
   std::vector<cInst_Base *> inst_vector;
-  std::vector<int> mem_array;
+  std::vector<float> mem_array;
   int max_mem_set;                        // Maximum memory value set so far.
 
   std::vector<cStackEntry *> exe_stack;
@@ -85,7 +86,8 @@ private:
   bool verbose;           // Should we print information about each line executed?
   std::ofstream v_file;   // Verbose file.
 public:
-  cHardware() : mem_array(1<<16), max_mem_set(0), IP(0), advance_IP(false), exe_count(0), timeout(-1)
+  cHardware() : mem_array(1<<16), max_mem_set(0), IP(0), advance_IP(false), exe_count(0)
+              , timeout(-1)
               , print_to_console(true), print_internal(true), count_cycles(false), verbose(false)
   {
     // srand(time(NULL));
@@ -110,25 +112,25 @@ public:
 
   cVar GetVar(int id) { return var_map[id]; }
   const std::map<int,cVar> & GetVarMap() { return var_map; }
-  void SetVar(int id, int value) { var_map[id].Set(value); }
+  // void SetVar(int id, int value) { var_map[id].Set(value); }
   void SetVar(int id, float value) { var_map[id].Set(value); }
 
   cArray & GetArray(int id) { return array_map[id]; }
   const std::map<int,cArray> & GetArrayMap() { return array_map; }
 
-  void PushInt(int value) { exe_stack.push_back(new cStackEntry(value)); }
+  void PushFloat(float value) { exe_stack.push_back(new cStackEntry(value)); }
   void PushArray(const cArray & value) { exe_stack.push_back(new cStackEntry(value)); }
-  int PopInt() {
+  float PopFloat() {
     if (exe_stack.size() == 0) {
       Error("Attempting to pop off an empty stack.");
       return 0;
     }
     if (exe_stack.back()->IsArray() == true) {
-      Error("Popping an array off the stack, but attempting to store it in an int.");
+      Error("Popping an array off the stack, but attempting to store it in a value.");
       return 0;
     }
 
-    int out_val = exe_stack.back()->AsInt();
+    float out_val = exe_stack.back()->AsFloat();
     delete exe_stack.back();
     exe_stack.pop_back();
     return out_val;
@@ -139,7 +141,7 @@ public:
       return cArray();
     }
     if (exe_stack.back()->IsArray() == false) {
-      Error("Popping an int off the stack, but attempting to store it in an array.");
+      Error("Popping a value off the stack, but attempting to store it in an array.");
       return cArray();
     }
 
@@ -154,7 +156,7 @@ public:
     else (*this) << "ERROR(line " << line_num << "): " << msg << '\n';
   }
   
-  int GetMemValue(int mem_pos) {
+  float GetMemValue(int mem_pos) {
     if (mem_pos < 0) {
       Error("Cannot index into a negative memory position");
       exit(1);
@@ -168,7 +170,7 @@ public:
     return mem_array[mem_pos];
   }
   
-  void SetMemValue(int mem_pos, int value) {
+  void SetMemValue(int mem_pos, float value) {
     if (mem_pos < 0) {
       Error("Cannot index into a negative memory position");
       exit(1);
@@ -185,7 +187,7 @@ public:
   
   int GetMaxMemSet() const { return max_mem_set; }
 
-  const std::vector<int> & GetMemArray() const { return mem_array; }
+  const std::vector<float> & GetMemArray() const { return mem_array; }
 
 
   bool RunStep();
@@ -256,18 +258,18 @@ public:
   void PrintVerbose(const std::string & out_string, cInstArg_Base * arg1=NULL, cInstArg_Base * arg2=NULL, cInstArg_Base * arg3=NULL) {
     if (verbose==true) {
       v_file << ":: " << IP << " :: " << out_string;
-      int cur_int = -1;
+      float cur_float = -1;
       if (arg1) {
-        cur_int = arg1->AsInt();
-        v_file << " " << arg1->VerboseString() << "(" << cur_int << ")";
+        cur_float = arg1->AsFloat();
+        v_file << " " << arg1->VerboseString() << "(" << cur_float << ")";
       }
       if (arg2) {
-        cur_int = arg2->AsInt();
-        v_file << " " << arg2->VerboseString() << "(" << cur_int << ")";
+        cur_float = arg2->AsFloat();
+        v_file << " " << arg2->VerboseString() << "(" << cur_float << ")";
       }
       if (arg3) {
-        cur_int = arg3->AsInt();
-        v_file << " " << arg3->VerboseString() << "(" << cur_int << ")";
+        cur_float = arg3->AsFloat();
+        v_file << " " << arg3->VerboseString() << "(" << cur_float << ")";
       }
       v_file << std::endl;
     }
@@ -276,7 +278,7 @@ public:
   void DebugStatus() {
     if (verbose == true) {
       for (int i = 0; i < 8; i++) {
-        v_file << "reg" << (char) ('A' + i) << "=" << var_map[i].AsInt() << "  ";
+        v_file << "reg" << (char) ('A' + i) << "=" << var_map[i].AsFloat() << "  ";
       }
       v_file << "IP=" << IP << std::endl;
 

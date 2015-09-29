@@ -277,7 +277,7 @@ public:
     }
     
     // Print the state of the memory into the table.
-    const std::vector<int> & mem_array = hardware->GetMemArray();
+    const std::vector<float> & mem_array = hardware->GetMemArray();
     const int max_mem = hardware->GetMaxMemSet();
     const int row_size = 10;
 

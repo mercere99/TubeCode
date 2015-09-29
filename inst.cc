@@ -13,7 +13,7 @@ int cInstArg_Label::AsInt()
 }
 
 
-bool cInstArg_Var::SetInt(int value)
+bool cInstArg_Var::SetFloat(float value)
 {
   hardware->SetVar(var_id, value);
   return true;
@@ -30,7 +30,7 @@ float cInstArg_Var::AsFloat()
 }
 
 
-bool cInstArg_Reg::SetInt(int value)
+bool cInstArg_Reg::SetFloat(float value)
 {
   hardware->SetVar(reg_id, value);
   return true;
@@ -82,12 +82,12 @@ bool cInst_DIV::Run()
 {
   PrintVerbose("div");
 
-  if (arg2->AsInt() == 0) {
+  if (arg2->AsFloat() == 0) {
     hardware->Error("div: Division by Zero");
     return false;
   }
 
-  arg3->SetInt(arg1->AsInt() / arg2->AsInt());
+  arg3->SetFloat(arg1->AsFloat() / arg2->AsFloat());
     
   return true;
 }
@@ -100,7 +100,7 @@ bool cInst_MOD::Run()
     hardware->Error("mod: Division by Zero");
     return false;
   }
-  arg3->SetInt(arg1->AsInt() % arg2->AsInt());
+  arg3->SetFloat((float) (arg1->AsInt() % arg2->AsInt()));
 
   return true;
 }
@@ -117,7 +117,7 @@ bool cInst_JUMP_IF_0::Run()
 {
   PrintVerbose("jump_if_0");
 
-  if (arg1->AsInt() == 0) hardware->JumpIP(arg2->AsInt());
+  if (arg1->AsFloat() == 0) hardware->JumpIP(arg2->AsInt());
   return true;
 }
 
@@ -125,7 +125,7 @@ bool cInst_JUMP_IF_N0::Run()
 {
   PrintVerbose("jump_if_n0");
 
-  if (arg1->AsInt() != 0) hardware->JumpIP(arg2->AsInt());
+  if (arg1->AsFloat() != 0) hardware->JumpIP(arg2->AsInt());
   return true;
 }
 
@@ -138,7 +138,7 @@ bool cInst_RANDOM::Run()
     hardware->Error("random: must have a positive upper limit");
     return false;
   }
-  arg2->SetInt(hardware->GetRandom(rand_max));
+  arg2->SetFloat((float) hardware->GetRandom(rand_max));
   return true;
 }
 
@@ -171,9 +171,9 @@ bool cInst_OUT_CHAR::Run()
 
 bool cInst_PUSH_NUM::Run()
 {
-  PrintVerbose("push (int)");
+  PrintVerbose("push (val)");
 
-  hardware->PushInt(arg1->AsInt());
+  hardware->PushFloat(arg1->AsFloat());
   return true;
 }
 
@@ -188,9 +188,9 @@ bool cInst_PUSH_ARRAY::Run()
 
 bool cInst_POP_NUM::Run()
 {
-  PrintVerbose("pop (int)");
+  PrintVerbose("pop (val)");
 
-  arg1->SetInt(hardware->PopInt());
+  arg1->SetFloat(hardware->PopFloat());
   return true;
 }
 
@@ -217,8 +217,8 @@ bool cInst_AR_GET_IDX::Run()
     return false;
   }
 
-  int out_val = array.GetIndex(index);
-  arg3->SetInt(out_val);
+  float out_val = array.GetIndex(index);
+  arg3->SetFloat(out_val);
 
   return true;
 }
@@ -237,7 +237,7 @@ bool cInst_AR_SET_IDX::Run()
     return false;
   }
 
-  int new_val = arg3->AsInt();
+  float new_val = arg3->AsFloat();
   array.SetIndex(index, new_val);
 
   return true;
@@ -248,7 +248,7 @@ bool cInst_AR_GET_SIZ::Run()
   PrintVerbose("ar_get_siz");
 
   cArray & array = hardware->GetArray(arg1->AsInt());
-  arg2->SetInt(array.GetSize());
+  arg2->SetFloat(array.GetSize());
 
   return true;
 }
@@ -284,8 +284,8 @@ bool cInst_LOAD::Run()
 {
   PrintVerbose("load");
 
-  int mem_value = hardware->GetMemValue(arg1->AsInt());
-  arg2->SetInt(mem_value);
+  float mem_value = hardware->GetMemValue(arg1->AsInt());
+  arg2->SetFloat(mem_value);
 
 
   return true;
@@ -295,7 +295,7 @@ bool cInst_STORE::Run()
 {
   PrintVerbose("store");
 
-  hardware->SetMemValue(arg2->AsInt(), arg1->AsInt());
+  hardware->SetMemValue(arg2->AsInt(), arg1->AsFloat());
 
   return true;
 }
@@ -304,7 +304,7 @@ bool cInst_MEM_COPY::Run()
 {
   PrintVerbose("mem_copy");
 
-  int mem_value = hardware->GetMemValue(arg1->AsInt());
+  float mem_value = hardware->GetMemValue(arg1->AsInt());
   hardware->SetMemValue(arg2->AsInt(), mem_value);
 
   return true;

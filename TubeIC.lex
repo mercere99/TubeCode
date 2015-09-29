@@ -15,7 +15,7 @@ cHardware * main_hardware;
 %option nounput
 %option noyywrap
 
-int		[0-9]+
+float		[0-9]+|[0-9]*\.[0-9]+
 comment		#.*
 eol		\n
 whitespace	[ \t\r]
@@ -41,6 +41,7 @@ nop { return INST_NOP; }
 random { return INST_RANDOM; }
 out_int { return INST_OUT_INT; }
 out_float { return INST_OUT_FLOAT; }
+out_val { return INST_OUT_FLOAT; }
 out_char { return INST_OUT_CHAR; }
 push { return INST_PUSH; }
 pop { return INST_POP; }
@@ -54,9 +55,9 @@ ar(ray)?_pop { return INST_AR_POP; }
 
 (load)|(store)|(mem_copy)|(reg[A-H]) { std::cerr << "Error(line " << line_num << "): instruction '" << yytext << "' valid only in TubeIC, not TubeCode assembly." << std::endl; exit(1); }
 
--?{int} { yylval.int_val = atoi(yytext); return ARG_INT; }
-s{int} { yylval.int_val = atoi(yytext+1); return ARG_SCALAR; }
-a{int} { yylval.int_val = atoi(yytext+1); return ARG_ARRAY; }
+-?{float} { yylval.float_val = atof(yytext); return ARG_FLOAT; }
+s{float} { yylval.int_val = atoi(yytext+1); return ARG_SCALAR; }
+a{float} { yylval.int_val = atoi(yytext+1); return ARG_ARRAY; }
 '.' { yylval.int_val = (int) yytext[1]; return ARG_CHAR; }
 '\\n' { yylval.int_val = (int) '\n'; return ARG_CHAR; }
 '\\t' { yylval.int_val = (int) '\t'; return ARG_CHAR; }
