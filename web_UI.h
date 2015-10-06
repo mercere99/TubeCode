@@ -3,21 +3,10 @@
 
 #include <emscripten.h>
 
+#include "../Empirical/tools/functions.h"
+
 #include "hardware.h"
 
-// The following two functions are from:
-// http://stackoverflow.com/questions/5056645/sorting-stdmap-using-value
-template<typename A, typename B> std::pair<B,A> flip_pair(const std::pair<A,B> &p)
-{
-  return std::pair<B,A>(p.second, p.first);
-}
-
-template<typename A, typename B> std::multimap<B,A> flip_map(const std::map<A,B> &src)
-{
-  std::multimap<B,A> dst;
-  std::transform(src.begin(), src.end(), std::inserter(dst, dst.begin()), flip_pair<A,B>);
-  return dst;
-}
 
 class VM_UI_base {
 protected:
@@ -38,7 +27,7 @@ public:
     const std::map<std::string, int> & label_map = hardware->GetLabelMap();
 
     // Reorganize label_map to be sorted by position, NOT name
-    std::multimap<int, std::string> position_map = flip_map(label_map);
+    std::multimap<int, std::string> position_map = emp::flip_map(label_map);
 
     // Be ready to step through position map to identify when we've hit a label!
     auto label_it = position_map.begin();
