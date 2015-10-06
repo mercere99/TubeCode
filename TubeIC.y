@@ -114,6 +114,7 @@ arg_arr:  ARG_ARRAY { $$ = new cInstArg_Array($1); }
 void LexMain(int argc, char * argv[]);
 void LexReadString(const std::string & in_string);
 
+#ifndef EMSCRIPTEN
 int main(int argc, char * argv[])
 {
   main_hardware = new cHardware();
@@ -124,6 +125,7 @@ int main(int argc, char * argv[])
 
   return 0;
 }
+#endif
 
 bool ParseString(const std::string & in_string)
 {

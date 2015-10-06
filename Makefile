@@ -1,11 +1,13 @@
+CFLAGS_all := -std=c++11 -Wall -Wno-deprecated-register -Wno-unused-variable -Wno-unused-function -pedantic
+
 CXX_nat := g++
-CFLAGS_nat := -O3 -Wall
+CFLAGS_nat := -O3 $(CFLAGS_all)
 LFLAGS_nat := -ll -ly
 
 CXX_web := emcc
 OFLAGS_web := -g4 -DEMK_DEBUG
 # OFLAGS_web := -oz
-CFLAGS_web := -std=c++11 $(OFLAGS_web) --js-library library_tubecode.js -s EXPORTED_FUNCTIONS="['_emkMain', '_emkMain_tubecode', '_emkJSDoCallback', '_emkLoadString']"
+CFLAGS_web := $(CFLAGS_all) $(OFLAGS_web) -Wno-dollar-in-identifier-extension -s TOTAL_MEMORY=67108864 -s ASSERTIONS=2 -s DEMANGLE_SUPPORT=1 --js-library emp/library_emp.js -s EXPORTED_FUNCTIONS="['_main', '_empCppCallback']" -s NO_EXIT_RUNTIME=1
 
 default: native
 all: native web
