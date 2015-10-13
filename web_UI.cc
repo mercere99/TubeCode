@@ -10,7 +10,12 @@ UI::Document doc("emp_base");
 VM_UI_base * VMUI;
 extern cHardware * main_hardware;
 
-void DoLoadCode(const std::string & in_code) { ; }
+extern "C" int LoadCode(std::string);
+
+  void DoLoadCode(const std::string & in_code) {
+  emp::Alert(in_code);
+  LoadCode(in_code);
+}
 
 void DoRestart() { VMUI->DoRestart(); }
 void DoStep() { VMUI->DoStep(); }
@@ -24,8 +29,6 @@ int main()
   doc << "<h1>Welcome to the TubeIC virtual machine</h1>"
       << "<p>Choose a Tube Intermediate Code file that you would like to load and run.</p>";
 
-  //    <input type="file" id="infile" name="infile[]" />
-  //    <output id="list"></output>
   doc.AddFileInput(DoLoadCode, "load_code");
   
   doc.AddButton(DoRestart, "Restart", "but_restart")
@@ -65,14 +68,14 @@ int main()
 }
 
 
-extern "C" int LoadCode(char * _string)
+extern "C" int LoadCode(std::string in_code)
 {
   // Initialize hardware object and UI.
   if (main_hardware != NULL) delete main_hardware;  // Remove existing hardware, if any
   main_hardware = new cHardware();                  // Build new hardware.
 
   // Parse the input code (which will automatically load it into the main hardware.
-  ParseString(_string);
+  ParseString(in_code.c_str());
 
   // Setup the UI with the newly loaded hardware.
   VMUI->SetupHardware(main_hardware);
