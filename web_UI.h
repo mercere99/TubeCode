@@ -1,24 +1,70 @@
 #ifndef TUBE_WEB_H
 #define TUBE_WEB_H
 
+#include <string>
 #include <emscripten.h>
 
 #include "../Empirical/tools/functions.h"
+#include "../Empirical/web/web.h"
 
 #include "hardware.h"
 
+namespace UI = emp::web;
+
+
+extern "C" int LoadCode(std::string);
+
+void DoLoadCode(const std::string & in_code) {
+  emp::Alert(in_code);
+  LoadCode(in_code);
+}
 
 class VM_UI_base {
 protected:
   cHardware * hardware;
-
+  UI::Document doc;
+  
 public:
-  VM_UI_base() : hardware(NULL) { ; }
+  VM_UI_base() : hardware(NULL), doc("emp_base")
+  {
+    doc << "<h1>Welcome to the TubeIC virtual machine</h1>"
+        << "<p>Choose a Tube Intermediate Code file that you would like to load and run.</p>";
+    
+    doc.AddFileInput(DoLoadCode, "load_code");
+    
+    doc.AddButton([this](){DoRestart();}, "Restart", "but_restart")
+      .Title("Restart program from beginning").SetWidth(80).Disabled(true);
+    doc.AddButton([this](){DoStep();}, "Step", "but_step")
+      .Title("Execute a single instruction in the program").SetWidth(80).Disabled(true);
+    doc.AddButton([this](){DoPlay();}, "Play", "but_play")
+      .Title("Continuously execute instructions").SetWidth(80).Disabled(true);
+    doc.AddButton([this](){DoEnd();}, "To End", "but_end")
+      .Title("Execute entire program and display final state").SetWidth(80).Disabled(true);
+    
+    auto code_div = doc.AddSlate("code_div");
+    code_div.SetColor("black");
+    code_div.SetPadding(5);
+    code_div.SetFloat("left");
+    code_div.SetHeight(500);
+    code_div.SetOverflow("auto");
+    
+    UI::Table code_table(1,5,"code");
+    code_div << code_table;
+    code_table.SetCSS("border-collapse", "collapse");
+    code_table.SetBackground("#F0F0F0");
+    
+    code_table.AddHeader(0,0, "Line");
+    code_table.AddHeader(0,1, "Instruction");
+    code_table.AddHeader(0,2, "Arg 1");
+    code_table.AddHeader(0,3, "Arg 2");
+    code_table.AddHeader(0,4, "Arg 3");
+
+  }
   virtual ~VM_UI_base() { ; }
 
   void UpdateCode() {
-    std::string inst_bg = "#f0f0f0";
-    std::string IP_bg = "#d0f0d0";
+    std::string inst_bg = "#f0f0f0";  // What color should general cells be?
+    std::string IP_bg = "#d0f0d0";    // What color should IP cells be?
 
     std::stringstream ss;
     ss << "<table style=\"background-color:" << inst_bg << ";\">"
