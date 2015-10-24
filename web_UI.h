@@ -72,7 +72,8 @@ public:
     UI::Slate rt_column("rt_column");
     UI::Slate console("console");
     UI::Slate var_div("var_div");
-    UI::Table var_table(var_table_col_count,1, "var_table");
+    UI::Table var_table(3, var_table_col_count, "var_table");
+    var_table.SetCSS("border-collapse", "collapse");
 
     console.SetSize(500, 200).SetFloat("left").SetPadding(5)
       .SetColor("white").SetBackground("black")
@@ -82,8 +83,8 @@ public:
       .SetColor("black").SetBackground("white")
       .SetOverflow("auto");
     
-    var_table.GetCell(0,0).SetHeader() << "Scalar Variables";
-    var_table.GetCell(2,0).SetHeader() << "Array Variables";
+    var_table.GetCell(0,0).SetColSpan(var_table_col_count).SetHeader() << "Scalar Variables";
+    var_table.GetCell(2,0).SetColSpan(var_table_col_count).SetHeader() << "Array Variables";
 
     var_div << var_table;
     rt_column << console;
@@ -103,7 +104,8 @@ public:
     auto label_it = position_map.begin();
 
     // Resize the table appropriately.
-    code_table.Rows( hardware->GetNumInsts() + position_map.size() + 1 );
+    const int num_rows = hardware->GetNumInsts() + position_map.size() + 1;
+    code_table.Rows( num_rows );
 
     // Step through all of the instructions in the program
     int cur_row = 1;
@@ -146,6 +148,13 @@ public:
       cur_row++;
     }
 
+    code_table.Redraw();
+
+    std::stringstream ss;
+    ss << "Testing OK()" << std::endl;
+    code_table.OK(ss, false);
+    emp::Alert(ss.str());
+    
     // Where should we scroll to on the screen?
     // Aim for top of scroll to be a few lines above IP.
 
@@ -166,13 +175,15 @@ public:
 
   
   void UpdateConsole() {
-    UI::Slate console = doc.Table("console");
+    UI::Slate console = doc.Slate("console");
 
     console.ClearChildren();
     console << hardware->GetMessages();
 
     // @CAO Make sure to scroll to console bottom!
     // console_obj.scrollTop = console_obj.scrollHeight;
+
+    console.Redraw();
   }
 
   // The main different between hardware types is available variables
@@ -258,10 +269,10 @@ public:
     
     UI::Table var_table = doc.Table("var_table");
     var_table.Rows(total_rows);
-
+    
     // Setup the header for scalars
     int cur_row = 0;
-    var_table.GetRow(cur_row).SetBackground(title_bg);
+    var_table.GetRow(cur_row).Clear().SetBackground(title_bg);
     var_table.GetCell(cur_row, 0).SetColSpan(var_table_col_count).SetHeader() << "Scalar Variables";
     cur_row++;
 
@@ -273,15 +284,15 @@ public:
         << "s" << var_it->first << " = " << var_it->second.AsInt();
       cur_col++;
     }
-    cur_row++;
 
     // Skip a line.
+    var_table.GetRow(cur_row).Clear();
     var_table.GetCell(cur_row, 0).SetColSpan(var_table_col_count) << "&nbsp;";
     cur_row++;
 
 
     // Setup header for array variables
-    var_table.GetRow(cur_row).SetBackground(title_bg);
+    var_table.GetRow(cur_row).Clear().SetBackground(title_bg);
     var_table.GetCell(cur_row, 0).SetColSpan(var_table_col_count).SetHeader() << "Array Variables";
     cur_row++;
 
@@ -301,20 +312,7 @@ public:
     }
     cur_row++;
 
-
-    
-
-    // Print the array variables into the table.
-    // for (auto var_it = array_map.begin(); var_it != array_map.end(); var_it++) {
-    //   ss << "<tr><td colspan=" << col_count << ">a" << var_it->first << " = [ ";
-    //   for (int i = 0; i < var_it->second.GetSize(); i++) {
-    //     if (i > 0) ss << ", ";
-    //     ss << var_it->second.GetIndex(i);
-    //   }
-    //   //<< var_it->second.AsInt();
-    //   ss << " ]</td></tr>";
-    // }
-
+    var_table.Redraw();
   }
 
   
