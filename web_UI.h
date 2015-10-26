@@ -40,6 +40,7 @@ public:
     doc << "<h1>Welcome to the TubeIC virtual machine</h1>"
         << "<p>Choose a Tube Intermediate Code file that you would like to load and run.</p>";
     
+    doc << "<p>";
     doc.AddFileInput(DoLoadCode, "load_code");
     
     doc.AddButton([this](){DoRestart();}, "Restart", "but_restart")
@@ -51,6 +52,7 @@ public:
     doc.AddButton([this](){DoEnd();}, "To End", "but_end")
       .Title("Execute entire program and display final state").SetWidth(80).Disabled(true);
     
+    doc << "</p>";
     auto code_div = doc.AddSlate("code_div");
     code_div.SetColor("black");
     code_div.SetPadding(5);
@@ -83,8 +85,8 @@ public:
       .SetColor("black").SetBackground("white")
       .SetOverflow("auto");
     
-    var_table.GetCell(0,0).SetColSpan(var_table_col_count).SetHeader() << "Scalar Variables";
-    var_table.GetCell(2,0).SetColSpan(var_table_col_count).SetHeader() << "Array Variables";
+    var_table.GetCell(0,0).SetColSpan(var_table_col_count).SetHeader().SetBackground("#CCCCFF") << "Scalar Variables";
+    var_table.GetCell(2,0).SetColSpan(var_table_col_count).SetHeader().SetBackground("#CCCCFF") << "Array Variables";
 
     var_div << var_table;
     rt_column << console;
