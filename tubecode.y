@@ -44,7 +44,6 @@ void yyerror(std::string err_string) {
 %%
 
 program:      statement_list { ; }
-        ;
 
 statement_list:	{ ; }
 	|	statement_list statement ENDLINE {
@@ -54,7 +53,6 @@ statement_list:	{ ; }
                   main_hardware->AddLabel($2);
 		  if ($4 != NULL) main_hardware->AddInst($4);
 		}
-	;
 
 statement:   { $$ = NULL; }
   | INST_VAL_COPY   arg_any arg_reg         { $$ = new cInst_VAL_COPY(line_num,$2,$3); }
@@ -81,20 +79,16 @@ statement:   { $$ = NULL; }
   | INST_STORE      arg_any arg_any         { $$ = new cInst_STORE(line_num,$2,$3); }
   | INST_MEM_COPY   arg_any arg_any         { $$ = new cInst_MEM_COPY(line_num,$2,$3); }
   | INST_DEBUG_STATUS                       { $$ = new cInst_DEBUG_STATUS(line_num); }
-          ;
 
 arg_any:  arg_reg { $$ = $1; }
           | arg_const { $$ = $1; }
-          ;
 
 arg_const: ARG_FLOAT { $$ = new cInstArg_Float($1); }
            | ARG_CHAR { $$ = new cInstArg_Float($1); }
            | ARG_LABEL { $$ = new cInstArg_Label($1); }
-           ;
 
 arg_reg:  ARG_REG { $$ = new cInstArg_Reg($1); }
           | ARG_IP { $$ = new cInstArg_IP(); }
-          ;
 
 %%
 void LexMain(int argc, char * argv[]);
