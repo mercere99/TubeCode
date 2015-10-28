@@ -14,11 +14,6 @@ namespace UI = emp::web;
 
 extern "C" int LoadCode(std::string);
 
-void DoLoadCode(const std::string & in_code) {
-  emp::Alert(in_code);
-  LoadCode(in_code);
-}
-
 // Some general constants.
 static const std::string inst_bg = "#f0f0f0";  // What color should general cells be?
 static const std::string IP_bg = "#d0f0d0";    // What color should active cells be?
@@ -26,16 +21,21 @@ static const std::string title_bg = "#CCCCFF"; // What color should the var titl
 
 static const int var_table_width = 500;
 static const int var_table_col_count = 4;
+static UI::Document doc("emp_base");
+
+void DoLoadCode(const std::string & in_code) {
+  emp::Alert(in_code);
+  LoadCode(in_code);
+}
 
 class VM_UI_base {
 protected:
   cHardware * hardware;
-  UI::Document doc;
 
   bool is_paused;
   
 public:
-  VM_UI_base() : hardware(NULL), doc("emp_base"), is_paused(true)
+  VM_UI_base() : hardware(NULL), is_paused(true)
   {
     doc << "<h1>Welcome to the TubeIC virtual machine</h1>"
         << "<p>Choose a Tube Intermediate Code file that you would like to load and run.</p>";
