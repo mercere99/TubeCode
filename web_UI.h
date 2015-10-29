@@ -26,6 +26,10 @@ static UI::Document doc("emp_base");
 void DoLoadCode(const std::string & in_code) {
   emp::Alert(in_code);
   LoadCode(in_code);
+  doc.Button("but_restart").Disabled(false);
+  doc.Button("but_step").Disabled(false);
+  doc.Button("but_play").Disabled(false);
+  doc.Button("but_end").Disabled(false);
 }
 
 class VM_UI_base {
@@ -84,8 +88,10 @@ public:
     var_div.SetSize(var_table_width,290).SetFloat("left").SetPadding(5)
       .SetColor("black").SetBackground("white")
       .SetOverflow("auto");
-    
+
+    var_table.SetWidth(var_table_width);
     var_table.GetCell(0,0).SetColSpan(var_table_col_count).SetHeader().SetBackground("#CCCCFF") << "Scalar Variables";
+    var_table.GetCell(1,0).SetColSpan(var_table_col_count);
     var_table.GetCell(2,0).SetColSpan(var_table_col_count).SetHeader().SetBackground("#CCCCFF") << "Array Variables";
 
     var_div << var_table;
@@ -152,10 +158,11 @@ public:
 
     code_table.Redraw();
 
-    std::stringstream ss;
-    ss << "Testing OK()" << std::endl;
-    code_table.OK(ss, false);
-    emp::Alert(ss.str());
+    // std::stringstream ss;
+    // ss << "Testing OK()" << std::endl;
+    // code_table.OK(ss, false);
+    // emp::Alert(ss.str());
+
     
     // Where should we scroll to on the screen?
     // Aim for top of scroll to be a few lines above IP.
@@ -268,40 +275,52 @@ public:
     const int array_rows = (num_arrays+3)/ var_table_col_count;
 
     const int total_rows = var_rows + array_rows + 3;
+
+    emp::Alert("  num_vars=", num_vars,
+               "  var_rows=", var_rows,
+               "  array_rows=", array_rows,
+               "  total_rows=", total_rows);
     
     UI::Table var_table = doc.Table("var_table");
     var_table.Rows(total_rows);
+    var_table.Clear();
     
     // Setup the header for scalars
     int cur_row = 0;
-    var_table.GetRow(cur_row).Clear().SetBackground(title_bg);
+    var_table.GetRow(cur_row).SetBackground(title_bg);
     var_table.GetCell(cur_row, 0).SetColSpan(var_table_col_count).SetHeader() << "Scalar Variables";
-    cur_row++;
 
     // Print the scalar variables into the table.
+    if (var_rows) cur_row++;
     int cur_col = 0;
     for (auto var_it = var_map.begin(); var_it != var_map.end(); var_it++) {
-      if (var_table_col_count == 4) { cur_row++; cur_col = 0; }
+      if (cur_col == var_table_col_count) { cur_row++; cur_col = 0; }
       var_table.GetCell(cur_row, cur_col).SetWidth(col_width)
         << "s" << var_it->first << " = " << var_it->second.AsInt();
       cur_col++;
     }
 
+    // Fill out the rest of the current row.
+    if (cur_col < var_table_col_count - 1) {
+      var_table.GetCell(cur_row, cur_col).SetColSpan(var_table_col_count - cur_col);
+    }
+    
     // Skip a line.
+    cur_row++;
     var_table.GetRow(cur_row).Clear();
     var_table.GetCell(cur_row, 0).SetColSpan(var_table_col_count) << "&nbsp;";
-    cur_row++;
 
 
     // Setup header for array variables
+    cur_row++;
     var_table.GetRow(cur_row).Clear().SetBackground(title_bg);
     var_table.GetCell(cur_row, 0).SetColSpan(var_table_col_count).SetHeader() << "Array Variables";
-    cur_row++;
 
     // Print the array variables into the table.
+    if (array_rows) cur_row++;
     cur_col = 0;
     for (auto var_it = array_map.begin(); var_it != array_map.end(); var_it++) {
-      if (var_table_col_count == 4) { cur_row++; cur_col = 0; }
+      if (cur_col == var_table_col_count) { cur_row++; cur_col = 0; }
       var_table.GetCell(cur_row, cur_col).SetWidth(col_width)
         << "s" << var_it->first << " = [ ";
       for (int i = 0; i < var_it->second.GetSize(); i++) {
