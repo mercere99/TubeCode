@@ -282,8 +282,8 @@ public:
                "  total_rows=", total_rows);
     
     UI::Table var_table = doc.Table("var_table");
-    var_table.Rows(total_rows);
-    var_table.Clear();
+    var_table.ClearRows();
+    var_table.Resize(total_rows, var_table_col_count);
     
     // Setup the header for scalars
     int cur_row = 0;
