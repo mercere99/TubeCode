@@ -4,6 +4,7 @@
 #include <string>
 #include <emscripten.h>
 
+#include "../Empirical/emtools/emfunctions.h"
 #include "../Empirical/tools/functions.h"
 #include "../Empirical/web/web.h"
 
@@ -228,7 +229,7 @@ public:
     if (is_paused) doc.Button("but_play").Label("Play");
     else {
       doc.Button("but_play").Label("Pause");
-      // @CAO Start the playing!
+      DoPlayStep();
     }
   }
 
@@ -247,10 +248,8 @@ public:
       doc.Button("but_play").Label("Play");
     }
     if (is_paused == false) {
-      // @CAO Play a single step!
-      // emkJSDoCallback(tube_cb.step, 0);
-      // emp::DelayCall()
-      // window.setTimeout(function() { emkJSDoCallback(tube_cb.play_step, 0); }, 250);
+      DoStep();
+      emp::DelayCall( [this](){DoPlayStep();}, 250 );
     }
   }
 
