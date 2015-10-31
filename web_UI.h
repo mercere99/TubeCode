@@ -276,10 +276,10 @@ public:
 
     const int total_rows = var_rows + array_rows + 3;
 
-    emp::Alert("  num_vars=", num_vars,
-               "  var_rows=", var_rows,
-               "  array_rows=", array_rows,
-               "  total_rows=", total_rows);
+    // emp::Alert("  num_vars=", num_vars,
+    //            "  var_rows=", var_rows,
+    //            "  array_rows=", array_rows,
+    //            "  total_rows=", total_rows);
     
     UI::Table var_table = doc.Table("var_table");
     var_table.ClearRows();
