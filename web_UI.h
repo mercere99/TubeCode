@@ -58,15 +58,14 @@ public:
       .Title("Execute entire program and display final state").SetWidth(80).Disabled(true);
     
     doc << "</p>";
-    auto code_div = doc.AddSlate("code_div");
+    UI::Slate code_div("code_div");
     code_div.SetColor("black");
     code_div.SetPadding(5);
     code_div.SetFloat("left");
     code_div.SetHeight(500);
-    code_div.SetOverflow("auto");
+    code_div.SetOverflow("auto"); // Scolling!
     
     UI::Table code_table(1,5,"code");
-    code_div << code_table;
     code_table.SetCSS("border-collapse", "collapse");
     code_table.SetBackground(inst_bg);
     
@@ -95,9 +94,11 @@ public:
     var_table.GetCell(1,0).SetColSpan(var_table_col_count);
     var_table.GetCell(2,0).SetColSpan(var_table_col_count).SetHeader().SetBackground("#CCCCFF") << "Array Variables";
 
+    code_div << code_table;
     var_div << var_table;
     rt_column << console;
     rt_column << var_div;
+    doc << code_div;
     doc << rt_column;
     
   }
@@ -105,7 +106,8 @@ public:
 
   void UpdateCode() {
     UI::Table code_table = doc.Table("code");
-
+    code_table.Freeze();  // Pause live updates until new data is in table.
+    
     // Reorganize label_map to be sorted by position, NOT name
     std::multimap<int, std::string> position_map = emp::flip_map(hardware->GetLabelMap());
 
@@ -157,7 +159,8 @@ public:
       cur_row++;
     }
 
-    code_table.Redraw();
+    code_table.Activate();
+    // code_table.Redraw();
 
     // std::stringstream ss;
     // ss << "Testing OK()" << std::endl;
@@ -188,7 +191,9 @@ public:
     UI::Slate console = doc.Slate("console");
 
     console.ClearChildren();
-    console << hardware->GetMessages();
+    console << "<pre>"
+            << hardware->GetMessages()
+            << "</pre>";
 
     // @CAO Make sure to scroll to console bottom!
     // console_obj.scrollTop = console_obj.scrollHeight;
